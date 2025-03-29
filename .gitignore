@@ -1,0 +1,7 @@
+# .gitignore
+.venv/
+venv/
+*venv*/
+*.dylib
+*.pyc
+.DS_Store

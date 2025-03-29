@@ -1,0 +1,32 @@
+import numpy as np
+import itertools
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+from sklearn.metrics import mean_squared_error
+
+# Function to calculate the SARIMAX model's AIC
+def get_sarimax_aic(data, order, seasonal_order):
+    try:
+        model = SARIMAX(data, order=order, seasonal_order=seasonal_order, enforce_stationarity=False, enforce_invertibility=False)
+        model_fit = model.fit(disp=0)
+        return model_fit.aic
+    except:
+        return np.inf
+
+# Choose one zip code for demonstration
+selected_zip = df_filtered['RegionName'].iloc[0]
+df_zip = df_long[df_long['RegionName'] == selected_zip]
+
+# Split the dataset into training (1997-2017) and test (2018) sets
+train_data = df_zip[df_zip['Date'] < '2018-01-01']
+test_data = df_zip[df_zip['Date'] >= '2018-01-01']
+
+# Grid search to find the best SARIMAX model
+p = q = range(0, 3)
+d = range(0, 2)
+pdq = list(itertools.product(p, d, q))
+
+seasonal_pdq = [(x[0], x[1], x[2], 12) for x in pdq]
+
+best_aic = np.inf
+best_order = None
+best_seasonal_order = None
